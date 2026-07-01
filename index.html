@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>选我吧</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div id="app">
+
+  <!-- ===== 首页 ===== -->
+  <div id="page-home" class="page active">
+    <div class="home-header">
+      <h1 class="app-title">选我吧</h1>
+      <p class="app-subtitle">选择困难？交给我</p>
+    </div>
+    <div class="home-cards">
+      <div class="home-card home-card-eat" onclick="goPage('eat')">
+        <div class="card-icon">🍜</div>
+        <div class="card-text">
+          <div class="card-title">今天吃什么</div>
+          <div class="card-desc">转盘一转，答案出现</div>
+        </div>
+      </div>
+      <div class="home-card home-card-wear" onclick="goPage('weather')">
+        <div class="card-icon">👔</div>
+        <div class="card-text">
+          <div class="card-title">今天穿什么</div>
+          <div class="card-desc">气温天气，一键搭配</div>
+        </div>
+      </div>
+    </div>
+    <div class="home-bottom">
+      <button class="btn-text" onclick="goPage('wardrobe')">🧺 我的衣橱</button>
+      <div style="display:flex;gap:8px;justify-content:center;margin-top:8px">
+        <button class="btn-text" onclick="exportData()">📤 导出数据</button>
+        <button class="btn-text" onclick="document.getElementById('importFileInput').click()">📥 导入数据</button>
+      </div>
+      <input type="file" id="importFileInput" accept=".json" style="display:none" onchange="importData(event)">
+    </div>
+  </div>
+
+  <!-- ===== 吃什么 ===== -->
+  <div id="page-eat" class="page">
+    <div class="page-header">
+      <button class="btn-back" id="eatBackBtn" onclick="eatGoBack()">←</button>
+      <span class="page-title" id="eatPageTitle">今天吃什么</span>
+      <button class="btn-icon" id="eatEditBtn" onclick="toggleEatEdit()">✏️</button>
+    </div>
+
+    <!-- 分类选择 -->
+    <div id="eatCategoryView">
+      <div class="cat-section-title">选个分类先</div>
+      <div class="cat-grid" id="catGrid"></div>
+    </div>
+
+    <!-- 具体选择（转盘/PK） -->
+    <div id="eatItemView" class="hidden">
+      <div class="mode-tabs">
+        <button class="mode-tab active" id="modeTabWheel" onclick="setEatMode('wheel')">🎡 转盘</button>
+        <button class="mode-tab" id="modeTabPK" onclick="setEatMode('pk')">⚔️ PK对决</button>
+      </div>
+      <div id="eatWheelMode">
+        <div class="eat-content">
+          <div class="wheel-container">
+            <div class="wheel-pointer">▼</div>
+            <canvas id="wheelCanvas" width="320" height="320"></canvas>
+          </div>
+          <div class="wheel-result" id="wheelResult">转一下试试！</div>
+          <button class="btn-primary" id="spinBtn" onclick="spinWheel()">转一下！</button>
+        </div>
+      </div>
+      <div id="eatPKMode" class="hidden">
+        <div class="pk-content">
+          <div class="pk-round-info" id="pkRoundInfo"></div>
+          <div class="pk-cards" id="pkCards">
+            <div class="pk-card" id="pkCardA" onclick="pkSelect(0)"></div>
+            <div class="pk-vs">VS</div>
+            <div class="pk-card" id="pkCardB" onclick="pkSelect(1)"></div>
+          </div>
+          <div class="pk-hint">留下你想吃的那个</div>
+          <div class="pk-progress" id="pkProgress"></div>
+          <button class="btn-secondary" id="pkResetBtn" onclick="resetPK()" style="display:none">重新PK</button>
+        </div>
+      </div>
+      <div class="eat-list" id="eatList">
+        <div class="eat-list-header">
+          <span id="eatListTitle">可选列表</span>
+          <span class="eat-count" id="eatCount"></span>
+        </div>
+        <div class="eat-items" id="eatItems" onmousedown="startEatLongPress(event)" onmouseup="cancelEatLongPress()" onmouseleave="cancelEatLongPress()" ontouchstart="startEatLongPress(event)" ontouchend="cancelEatLongPress()" ontouchmove="cancelEatLongPress()"></div>
+      </div>
+      <div id="deleteDoneBtn" class="hidden" style="text-align:center;margin-top:8px;margin-bottom:4px">
+        <button class="btn-small" onclick="exitDeleteMode()">完成</button>
+      </div>
+    </div>
+
+    <!-- 编辑列表弹窗 -->
+    <div class="modal-overlay" id="eatEditModal" onclick="closeEatEdit()">
+      <div class="modal modal-full" onclick="event.stopPropagation()">
+        <div class="modal-header">
+          <span>编辑食物列表</span>
+          <button class="btn-icon" onclick="closeEatEdit()">✕</button>
+        </div>
+        <div class="modal-body">
+          <div class="edit-cat-select">
+            <label>当前分类</label>
+            <select class="input" id="editCatSelect" onchange="switchEditCategory(this.value)"></select>
+          </div>
+          <div class="edit-items" id="editItems"></div>
+          <div class="edit-add-row">
+            <input class="input" id="newFoodInput" placeholder="输入新选项...">
+            <button class="btn-small" onclick="addFood()">添加</button>
+          </div>
+          <div class="edit-cat-mgmt">
+            <div class="edit-cat-title">分类管理</div>
+            <div class="edit-cat-list" id="editCatList"></div>
+            <div class="edit-add-row" style="margin-top:8px">
+              <input class="input" id="newCatInput" placeholder="新分类名称...">
+              <button class="btn-small" onclick="addCategory()">添加分类</button>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn-text" onclick="resetEatList()">恢复默认</button>
+          <button class="btn-primary" onclick="closeEatEdit()">完成</button>
+        </div>
+      </div>
+    </div>
+  </div><!-- ===== 穿什么 - 天气输入 ===== -->
+  <div id="page-weather" class="page">
+    <div class="page-header">
+      <button class="btn-back" onclick="goPage('home')">←</button>
+      <span class="page-title">今天穿什么</span>
+    </div>
+    <div class="weather-content">
+      <div class="weather-section">
+        <label class="weather-label">今日温度范围</label>
+        <div class="dual-picker">
+          <div class="dp-col">
+            <div class="dp-label">最低</div>
+            <div class="dp-val" id="tempMinDisplay">18°</div>
+            <div class="scroll-picker" id="tempMinPicker">
+              <div class="picker-track" id="tempMinTrack"></div>
+              <div class="picker-indicator"></div>
+            </div>
+          </div>
+          <div class="dp-col">
+            <div class="dp-label">最高</div>
+            <div class="dp-val" id="tempMaxDisplay">28°</div>
+            <div class="scroll-picker" id="tempMaxPicker">
+              <div class="picker-track" id="tempMaxTrack"></div>
+              <div class="picker-indicator"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="weather-section">
+        <label class="weather-label">天气状况</label>
+        <div class="weather-options" id="weatherOptions">
+          <div class="weather-option selected" data-weather="sunny" onclick="selectWeather(this)">☀️<br>晴</div>
+          <div class="weather-option" data-weather="cloudy" onclick="selectWeather(this)">⛅<br>多云</div>
+          <div class="weather-option" data-weather="rainy" onclick="selectWeather(this)">🌧️<br>雨</div>
+          <div class="weather-option" data-weather="windy" onclick="selectWeather(this)">🌬️<br>大风</div>
+        </div>
+      </div>
+      <div class="weather-preview" id="weatherPreview">
+        <div class="preview-summary" id="previewSummary">☀️ 22°C 晴 · 建议穿2件</div>
+        <div class="preview-detail" id="previewDetail">上衣 + 薄外套 + 裤子 + 鞋子</div>
+      </div>
+      <button class="btn-primary" onclick="startOutfit()">开始搭配</button>
+    </div>
+  </div>
+
+  <!-- ===== 穿什么 - 搭配页 ===== -->
+  <div id="page-outfit" class="page">
+    <div class="page-header">
+      <button class="btn-back" onclick="goPage('weather')">←</button>
+      <span class="page-title">搭配</span>
+      <button class="btn-icon" onclick="saveOutfit()">💾</button>
+    </div>
+    <div class="outfit-info" id="outfitInfo"></div>
+    <div class="model-container" id="modelContainer">
+      <svg class="model-svg" viewBox="0 0 200 400" id="bodyModel">
+        <!-- Head -->
+        <ellipse cx="100" cy="40" rx="24" ry="30" fill="#f5f5f5" stroke="#ddd" stroke-width="1.5"/>
+        <!-- Neck -->
+        <rect x="88" y="68" width="24" height="16" rx="3" fill="#f5f5f5" stroke="#ddd" stroke-width="1.5"/>
+        <!-- Shoulders / Upper body -->
+        <path d="M55,85 Q45,90 40,100 L38,110 L52,108 Q55,100 62,95 L62,85 Z" fill="#f5f5f5" stroke="#ddd" stroke-width="1.5"/>
+        <path d="M145,85 Q155,90 160,100 L162,110 L148,108 Q145,100 138,95 L138,85 Z" fill="#f5f5f5" stroke="#ddd" stroke-width="1.5"/>
+        <!-- Torso -->
+        <path d="M62,84 Q60,95 58,110 L52,200 Q50,220 58,232 L142,232 Q150,220 148,200 L142,110 Q140,95 138,84 Z" fill="#f5f5f5" stroke="#ddd" stroke-width="1.5"/>
+        <!-- Arms -->
+        <path d="M40,100 L28,165 Q26,178 30,188 L36,190 Q38,180 42,170 L50,108 Z" fill="#f5f5f5" stroke="#ddd" stroke-width="1.5"/>
+        <path d="M160,100 L172,165 Q174,178 170,188 L164,190 Q162,180 158,170 L150,108 Z" fill="#f5f5f5" stroke="#ddd" stroke-width="1.5"/>
+        <!-- Legs -->
+        <path d="M72,232 L66,330 Q64,345 68,352 L80,352 Q82,345 84,330 L88,232 Z" fill="#f5f5f5" stroke="#ddd" stroke-width="1.5"/>
+        <path d="M128,232 L134,330 Q136,345 132,352 L120,352 Q118,345 116,330 L112,232 Z" fill="#f5f5f5" stroke="#ddd" stroke-width="1.5"/>
+      </svg>
+      <!-- Clothing items will be added here dynamically -->
+      <div id="modelItems"></div>
+    </div>
+    <div class="category-swiper" id="categorySwiper"></div>
+    <div class="outfit-actions">
+      <button class="btn-secondary" onclick="addOptional()">➕ 添加其他类型</button>
+    </div>
+    <!-- 添加类型弹窗 -->
+    <div class="modal-overlay" id="addTypeModal" onclick="closeAddType()">
+      <div class="modal" onclick="event.stopPropagation()">
+        <div class="modal-header">
+          <span>添加类型</span>
+          <button class="btn-icon" onclick="closeAddType()">✕</button>
+        </div>
+        <div class="modal-body">
+          <div class="type-grid" id="typeGrid"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== 衣橱 ===== -->
+  <div id="page-wardrobe" class="page">
+    <div class="page-header">
+      <button class="btn-back" onclick="goPage('home')">←</button>
+      <span class="page-title">我的衣橱</span>
+      <button class="btn-primary btn-sm" onclick="openAddClothes()">+ 添加</button>
+    </div>
+    <div class="wardrobe-filters" id="wardrobeFilters"></div>
+    <div class="wardrobe-grid" id="wardrobeGrid"></div>
+    <div id="wardrobeActionBar" class="hidden" style="display:flex;gap:8px;padding:8px 16px;position:sticky;bottom:0;background:#fff;border-top:1px solid #f0f0f0">
+      <button class="btn-secondary" style="flex:1;margin:0" onclick="exitWardrobeSelect()">完成</button>
+      <button class="btn-primary" style="flex:2;margin:0" id="deleteSelectedBtn" onclick="deleteSelectedItems()">删除选中 (0)</button>
+    </div>
+    <!-- 添加衣物弹窗 -->
+    <div class="modal-overlay" id="addClothesModal" onclick="closeModal('addClothesModal')">
+      <div class="modal modal-full" onclick="event.stopPropagation()">
+        <div class="modal-header">
+          <span>添加衣物</span>
+          <button class="btn-icon" onclick="closeModal('addClothesModal')">✕</button>
+        </div>
+        <div class="modal-body">
+          <div class="upload-area" id="uploadArea" onclick="document.getElementById('fileInput').click()">
+            <div class="upload-placeholder" id="uploadPlaceholder">
+              <div class="upload-icon">📷</div>
+              <div>拍照或从相册选择</div>
+            </div>
+            <img id="uploadPreview" class="upload-preview hidden">
+            <input type="file" id="fileInput" accept="image/*" capture="environment" onchange="handleFileSelect(event)" style="display:none">
+          </div>
+          <div class="form-group">
+            <label>类别</label>
+            <select id="clothCategory" class="input">
+              <option value="上衣">上衣</option>
+              <option value="外套">外套</option>
+              <option value="防晒衣">防晒衣</option>
+              <option value="裤子">裤子</option>
+              <option value="短裤">短裤</option>
+              <option value="半身裙">半身裙</option>
+              <option value="连衣裙">连衣裙</option>
+              <option value="鞋子">鞋子</option>
+              <option value="帽子">帽子</option>
+              <option value="眼镜">眼镜</option>
+              <option value="围巾">围巾</option>
+              <option value="耳饰">耳饰</option>
+              <option value="项链">项链</option>
+              <option value="腰带">腰带</option>
+              <option value="包包">包包</option>
+              <option value="手套">手套</option>
+              <option value="耳罩">耳罩</option>
+              <option value="袜子">袜子</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>子类型（可选）</label>
+            <input class="input" id="clothSubtype" placeholder="如：短袖T恤、连帽卫衣...">
+          </div>
+          <div class="form-group">
+            <label>名称（可选）</label>
+            <input class="input" id="clothName" placeholder="如：我的白色T恤">
+          </div>
+          <div class="form-group">
+            <label>适用温度（多选）</label>
+            <div class="temp-tags" id="tempTags"></div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn-primary" onclick="saveClothes()">保存</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== 结果弹窗 ===== -->
+  <div class="modal-overlay" id="resultModal" onclick="closeModal('resultModal')">
+    <div class="modal result-modal" onclick="event.stopPropagation()">
+      <div class="result-icon" id="resultIcon">🎉</div>
+      <div class="result-title" id="resultTitle">决定了！</div>
+      <div class="result-item" id="resultItem">火锅</div>
+      <button class="btn-primary" onclick="closeModal('resultModal')">好的！</button>
+      <button class="btn-secondary" onclick="closeModal('resultModal');spinWheel()">再来一次</button>
+    </div>
+  </div>
+
+
+  <!-- ===== 图片查看器 ===== -->
+  <div class="modal-overlay" id="imageViewer" onclick="closeImageViewer()">
+    <div class="viewer-content" onclick="event.stopPropagation()">
+      <div class="viewer-header">
+        <span id="viewerIndex" style="color:#fff;font-size:14px"></span>
+        <button class="btn-icon" style="color:#fff;font-size:15px;padding:4px 10px;margin-right:8px" onclick="editCurrentViewerItem()">✏️ 编辑</button><button class="btn-icon" style="color:#fff;font-size:22px" onclick="closeImageViewer()">✕</button>
+      </div>
+      <div class="viewer-image-container" id="viewerContainer"
+        ontouchstart="viewerTouchStart(event)" ontouchend="viewerTouchEnd(event)">
+        <img id="viewerImage" src="" alt="">
+      </div>
+      <div class="viewer-nav">
+        <button class="btn-icon" style="color:#fff;font-size:32px;padding:8px 16px" onclick="viewerPrev()">‹</button>
+        <span id="viewerName" style="color:#fff;font-size:13px"></span>
+        <button class="btn-icon" style="color:#fff;font-size:32px;padding:8px 16px" onclick="viewerNext()">›</button>
+      </div>
+    </div>
+  </div>
+</div>
+<script src="app.js"></script>
+</body>
+</html>
