@@ -216,14 +216,3 @@ body { font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Mi
 .dual-temp-divider { font-size:20px; color:#ccc; padding-top:36px; }
 .dual-temp .temp-display { font-size:28px; font-weight:300; margin-bottom:4px; }
 .dual-temp .temp-display .temp-unit { font-size:14px; }
-
-.dual-picker { display:flex; gap:8px; align-items:stretch; }
-.dp-col { flex:1; text-align:center; }
-.dp-label { font-size:13px; color:#888; margin-bottom:2px; }
-.dp-val { font-size:28px; font-weight:300; color:#333; margin-bottom:4px; }
-.scroll-picker { height:160px; overflow-y:scroll; scroll-snap-type:y mandatory; scrollbar-width:none; -webkit-overflow-scrolling:touch; position:relative; background:#fafafa; border-radius:10px; border:1px solid #eee; }
-.scroll-picker::-webkit-scrollbar { display:none; }
-.picker-track { padding:60px 0; }
-.picker-item { height:40px; scroll-snap-align:center; display:flex; align-items:center; justify-content:center; font-size:16px; color:#bbb; transition:all 0.08s; }
-.picker-item.sel { font-size:21px; font-weight:700; color:#e84c3d; }
-.picker-indicator { position:absolute; top:50%; left:15%; right:15%; height:40px; transform:translateY(-50%); border-top:2px solid #e84c3d; border-bottom:2px solid #e84c3d; border-radius:4px; pointer-events:none; opacity:0.3; }

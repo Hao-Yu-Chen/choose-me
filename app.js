@@ -13,7 +13,7 @@ const DEFAULT_FOOD_ITEMS = {
   '零食':['薯片','辣条','饼干','巧克力','坚果','果冻','海苔','肉干']
 };
 const CAT_EMOJI = {'主食':'🍜','饮品':'🥤','甜点':'🍰','水果':'🍉','零食':'🍿'};
-const ALL_CATEGORIES = ['上衣','外套','防晒衣','裤子','短裤','半身裙','连衣裙','鞋子','帽子','眼镜','围巾','耳饰','项链','腰带','包包','手套','耳罩','袜子'];
+const ALL_CATEGORIES = ['上衣','外套','裤子','短裤','半身裙','连衣裙','鞋子','帽子','眼镜','围巾','耳饰','项链','腰带','包包','手套','耳罩','袜子'];
 const TEMP_RANGES = [
   {key:'freezing',label:'严寒(<5°C)',min:-10,max:4},{key:'cold',label:'寒冷(5-10°C)',min:5,max:10},
   {key:'cool',label:'较冷(10-15°C)',min:11,max:15},{key:'mild_cool',label:'偏凉(15-20°C)',min:16,max:20},
@@ -21,19 +21,19 @@ const TEMP_RANGES = [
   {key:'hot',label:'炎热(>30°C)',min:31,max:45}
 ];
 const RECOMMEND_RULES = {
-  hot:{summary:'穿1件·轻薄透气',required:['上衣','短裤/短裙','鞋子'],optional:['帽子','眼镜'],rainy_add:['薄外套(防水)'],windy_add:[],sunny_add:['防晒衣','遮阳帽']},
-  warm:{summary:'穿1-2件·清凉',required:['上衣','下装','鞋子'],optional:['薄外套','帽子','眼镜'],rainy_add:['薄外套(防水)'],windy_add:[],sunny_add:['防晒衣']},
-  mild:{summary:'穿2件·适中',required:['上衣','外套','下装','鞋子'],optional:[],rainy_add:['防水外套(推荐)'],windy_add:['防风外套(推荐)'],sunny_add:[]},
-  mild_cool:{summary:'穿2-3件·加件外套',required:['内搭/长袖','外套','下装','鞋子'],optional:['围巾'],rainy_add:['防水外套(推荐)'],windy_add:['防风外套(推荐)'],sunny_add:[]},
-  cool:{summary:'穿3件·保暖',required:['内搭','毛衣','外套','下装','鞋子'],optional:['围巾','帽子'],rainy_add:['防水外套'],windy_add:['防风外套'],sunny_add:[]},
-  cold:{summary:'穿3-4件·注意保暖',required:['保暖内搭','毛衣','羽绒服','厚下装','靴子'],optional:['围巾','帽子','手套'],rainy_add:[],windy_add:[],sunny_add:[]},
-  freezing:{summary:'穿4件+·全副武装',required:['保暖内衣','毛衣','羽绒服','厚裤子','雪地靴'],optional:['围巾','帽子','手套','耳罩'],rainy_add:[],windy_add:[],sunny_add:[]}
+  hot:{summary:'穿1件·轻薄透气',required:['上衣','短裤/短裙','鞋子'],optional:['帽子','眼镜'],rainy_add:['薄外套(防水)'],windy_add:[]},
+  warm:{summary:'穿1-2件·清凉',required:['上衣','下装','鞋子'],optional:['薄外套','帽子','眼镜'],rainy_add:['薄外套(防水)'],windy_add:[]},
+  mild:{summary:'穿2件·适中',required:['上衣','外套','下装','鞋子'],optional:[],rainy_add:['防水外套(推荐)'],windy_add:['防风外套(推荐)']},
+  mild_cool:{summary:'穿2-3件·加件外套',required:['内搭/长袖','外套','下装','鞋子'],optional:['围巾'],rainy_add:['防水外套(推荐)'],windy_add:['防风外套(推荐)']},
+  cool:{summary:'穿3件·保暖',required:['内搭','毛衣','外套','下装','鞋子'],optional:['围巾','帽子'],rainy_add:['防水外套'],windy_add:['防风外套']},
+  cold:{summary:'穿3-4件·注意保暖',required:['保暖内搭','毛衣','羽绒服','厚下装','靴子'],optional:['围巾','帽子','手套'],rainy_add:[],windy_add:[]},
+  freezing:{summary:'穿4件+·全副武装',required:['保暖内衣','毛衣','羽绒服','厚裤子','雪地靴'],optional:['围巾','帽子','手套','耳罩'],rainy_add:[],windy_add:[]}
 };
 const CAT_POSITIONS = {
   '帽子':{x:'28%',y:'0%',w:'44%',h:'16%',z:10},'耳饰':{x:'40%',y:'10%',w:'20%',h:'12%',z:10},
   '眼镜':{x:'28%',y:'12%',w:'44%',h:'12%',z:10},'围巾':{x:'25%',y:'18%',w:'50%',h:'14%',z:9},
   '项链':{x:'35%',y:'20%',w:'30%',h:'10%',z:9},'上衣':{x:'20%',y:'22%',w:'60%',h:'32%',z:5},
-  '外套':{x:'16%',y:'20%',w:'68%',h:'38%',z:8},'防晒衣':{x:'16%',y:'20%',w:'68%',h:'36%',z:7},'连衣裙':{x:'18%',y:'22%',w:'64%',h:'52%',z:5},
+  '外套':{x:'16%',y:'20%',w:'68%',h:'38%',z:8},'连衣裙':{x:'18%',y:'22%',w:'64%',h:'52%',z:5},
   '腰带':{x:'25%',y:'52%',w:'50%',h:'6%',z:7},'裤子':{x:'20%',y:'50%',w:'60%',h:'36%',z:4},
   '短裤':{x:'20%',y:'50%',w:'60%',h:'22%',z:4},'半身裙':{x:'20%',y:'50%',w:'60%',h:'30%',z:4},
   '手套':{x:'2%',y:'50%',w:'18%',h:'18%',z:6},'耳罩':{x:'10%',y:'6%',w:'80%',h:'18%',z:10},
@@ -50,11 +50,11 @@ const RULE_TO_CAT = {
   '裤子':['裤子'],'长裤':['裤子'],'短裤':['短裤'],'短裙':['半身裙'],
   '短裤/短裙':['短裤','半身裙'],'厚裤子':['裤子'],
   '鞋子':['鞋子'],'鞋子(薄)':['鞋子'],'靴子':['鞋子'],'雪地靴':['鞋子'],'运动鞋':['鞋子'],
-  '防晒衣':['防晒衣'],'帽子':['帽子'],'眼镜':['眼镜'],'围巾':['围巾'],'手套':['手套'],'耳罩':['耳罩'],
+  '帽子':['帽子'],'眼镜':['眼镜'],'围巾':['围巾'],'手套':['手套'],'耳罩':['耳罩'],
   '包包':['包包'],'遮阳帽':['帽子']
 };
 const PLACEHOLDER_COLORS = {
-  '上衣':'#ffcdd2','外套':'#c5cae9','防晒衣':'#fff9c4','裤子':'#bbdefb','短裤':'#b3e5fc','半身裙':'#f8bbd0',
+  '上衣':'#ffcdd2','外套':'#c5cae9','裤子':'#bbdefb','短裤':'#b3e5fc','半身裙':'#f8bbd0',
   '连衣裙':'#f48fb1','鞋子':'#cfd8dc','帽子':'#fff9c4','眼镜':'#b2dfdb','围巾':'#d1c4e9',
   '耳饰':'#fce4ec','项链':'#ffe0b2','腰带':'#795548','包包':'#bcaaa4','手套':'#ffccbc',
   '耳罩':'#b2ebf2','袜子':'#e0e0e0'
@@ -80,7 +80,7 @@ function goPage(page){
   var el=document.getElementById('page-'+page);
   if(el)el.classList.add('active');
   if(page==='eat')initEat();
-  if(page==='weather'){initTempPickers();}
+  if(page==='weather'){updateTempRange();}
   if(page==='outfit')renderOutfit();
   if(page==='wardrobe')renderWardrobe();
 }
@@ -207,6 +207,20 @@ function addFood(){
 function removeFood(i){store.foods.splice(i,1);saveStore();renderEditList();renderEatList();drawWheel();}
 function resetEatList(){store.foods=[...DEFAULT_FOODS];saveStore();renderEditList();renderEatList();drawWheel();}
 
+// ============================================
+//  穿什么 - 天气输入
+// ============================================
+let currentTemp=22,currentWeather='sunny',currentTempKey='mild';
+function updateTemp(v){
+  currentTemp=parseInt(v);
+  currentTempKey=getTempKey(currentTemp);
+  document.getElementById('tempValue').textContent=currentTemp;
+  var tl=document.getElementById('tempRangeLabel');
+  if(tl){
+    for(var i=0;i<TEMP_RANGES.length;i++){if(TEMP_RANGES[i].key===currentTempKey){tl.textContent=TEMP_RANGES[i].label;break;}}
+  }
+  updateWeatherPreview();
+}
 function selectWeather(el){
   document.querySelectorAll('.weather-option').forEach(function(o){o.classList.remove('selected');});
   el.classList.add('selected');currentWeather=el.dataset.weather;updateWeatherPreview();
@@ -216,16 +230,34 @@ function getWeatherEmoji(w){return{'sunny':'☀️','cloudy':'⛅','rainy':'🌧
 function getWeatherText(w){return{'sunny':'晴','cloudy':'多云','rainy':'雨','windy':'大风'}[w]||'晴';}
 
 
+function updateTempRange() {
+  var minEl = document.getElementById('tempMinSlider');
+  var maxEl = document.getElementById('tempMaxSlider');
+  if (!minEl || !maxEl) return;
+  var min = parseInt(minEl.value);
+  var max = parseInt(maxEl.value);
+  if (min > max) { min = max; minEl.value = min; }
+  document.getElementById('tempMinValue').textContent = min;
+  document.getElementById('tempMaxValue').textContent = max;
+  currentTemp = min;
+  currentTempKey = getTempKey(min);
+  currentSpannedZones = [];
+  for (var i = 0; i < TEMP_RANGES.length; i++) {
+    var r = TEMP_RANGES[i];
+    if (r.min <= max && r.max >= min) currentSpannedZones.push(r.key);
+  }
+  updateWeatherPreview();
+}
 
 function updateWeatherPreview(){
-  var minVal=tempMinVal||currentTemp,maxVal=tempMaxVal||currentTemp;
+  var minEl=document.getElementById('tempMinSlider'),maxEl=document.getElementById('tempMaxSlider');
+  var minVal=minEl?parseInt(minEl.value):currentTemp,maxVal=maxEl?parseInt(maxEl.value):currentTemp;
   var key=currentTempKey||getTempKey(currentTemp),rule=RECOMMEND_RULES[key],emoji=getWeatherEmoji(currentWeather),wt=getWeatherText(currentWeather);
   var p1=document.getElementById('previewSummary'),p2=document.getElementById('previewDetail');if(!p1)return;
   p1.textContent=emoji+' '+minVal+'-'+maxVal+'°C '+wt+' · '+rule.summary;
   var all=rule.required.slice();
   if(currentWeather==='rainy'&&rule.rainy_add.length)rule.rainy_add.forEach(function(a){all.push(a);});
   if(currentWeather==='windy'&&rule.windy_add.length)rule.windy_add.forEach(function(a){all.push(a);});
-  if(currentWeather==='sunny'&&rule.sunny_add&&rule.sunny_add.length)rule.sunny_add.forEach(function(a){all.push(a);});
   if(rule.optional.length)rule.optional.forEach(function(o){all.push('+'+o);});
   p2.textContent=all.join(' · ');
 }
@@ -236,7 +268,8 @@ function updateWeatherPreview(){
 let currentOutfit={categories:[],items:{},activeItem:null};
 
 function startOutfit(){
-  currentTemp = tempMinVal;
+  var minEl=document.getElementById('tempMinSlider');
+  if(minEl)currentTemp=parseInt(minEl.value);
   currentTempKey=getTempKey(currentTemp);
   var key=currentTempKey,rule=RECOMMEND_RULES[key],cats=[],catMap={};
   rule.required.forEach(function(r){
@@ -244,7 +277,6 @@ function startOutfit(){
   });
   if(currentWeather==='rainy'){rule.rainy_add.forEach(function(r){var m=RULE_TO_CAT[r];if(m)m.forEach(function(c){if(!catMap[c]){catMap[c]=true;cats.push({cat:c,required:true});}});});}
   if(currentWeather==='windy'){rule.windy_add.forEach(function(r){var m=RULE_TO_CAT[r];if(m)m.forEach(function(c){if(!catMap[c]){catMap[c]=true;cats.push({cat:c,required:true});}});});}
-  if(currentWeather==='sunny'&&rule.sunny_add&&rule.sunny_add.length){rule.sunny_add.forEach(function(r){var m=RULE_TO_CAT[r];if(m)m.forEach(function(c){if(!catMap[c]){catMap[c]=true;cats.push({cat:c,required:false});}});});}
   currentOutfit={categories:cats,items:{},activeItem:null};
   cats.forEach(function(c){currentOutfit.items[c.cat]=0;});
   goPage('outfit');
@@ -368,7 +400,7 @@ function renderCategorySwiper(){
   });
 }
 
-function getCatEmoji(cat){var m={'上衣':'👕','外套':'🧥','防晒衣':'☂️','裤子':'👖','短裤':'🩳','半身裙':'👗','连衣裙':'👗','鞋子':'👟','帽子':'🧢','眼镜':'👓','围巾':'🧣','耳饰':'💍','项链':'📿','腰带':'🔗','包包':'👜','手套':'🧤','耳罩':'🎧','袜子':'🧦'};return m[cat]||'📦';}
+function getCatEmoji(cat){var m={'上衣':'👕','外套':'🧥','裤子':'👖','短裤':'🩳','半身裙':'👗','连衣裙':'👗','鞋子':'👟','帽子':'🧢','眼镜':'👓','围巾':'🧣','耳饰':'💍','项链':'📿','腰带':'🔗','包包':'👜','手套':'🧤','耳罩':'🎧','袜子':'🧦'};return m[cat]||'📦';}
 
 function selectCategoryItem(cat,idx){
   currentOutfit.items[cat]=idx;
@@ -946,67 +978,6 @@ function deleteSelectedItems() {
   saveStore();
   exitWardrobeSelect();
   renderWardrobe();
-}
-
-
-
-// ===== Temperature Scroll Picker =====
-var tempMinVal = 18, tempMaxVal = 28;
-
-function initTempPickers() {
-  for (var pid = 0; pid < 2; pid++) {
-    var trackId = pid === 0 ? 'tempMinTrack' : 'tempMaxTrack';
-    var defVal = pid === 0 ? 18 : 28;
-    var track = document.getElementById(trackId);
-    if (!track) continue;
-    var h = '';
-    for (var t = -10; t <= 45; t++) {
-      h += '<div class="picker-item" data-val="' + t + '">' + t + '°</div>';
-    }
-    track.innerHTML = h;
-    setTimeout(function(tid, dv) {
-      return function() {
-        var items = document.getElementById(tid).querySelectorAll('.picker-item');
-        var idx = dv + 10;
-        if (idx >= 0 && idx < items.length) {
-          items[idx].scrollIntoView({block:'center',behavior:'auto'});
-          items[idx].classList.add('sel');
-        }
-      };
-    }(trackId, defVal), 80);
-    var picker = track.parentElement;
-    (function(pid2, pickerEl) {
-      pickerEl.addEventListener('scroll', function() {
-        var items = this.querySelectorAll('.picker-item');
-        var center = this.scrollTop + this.clientHeight / 2;
-        var closest = null, cDist = Infinity;
-        items.forEach(function(it) {
-          var ic = it.offsetTop + it.offsetHeight / 2;
-          var d = Math.abs(ic - center);
-          if (d < cDist) { cDist = d; closest = it; }
-        });
-        if (closest) {
-          items.forEach(function(it){ it.classList.toggle('sel', it === closest); });
-          var val = parseInt(closest.dataset.val);
-          if (pid2 === 0) { tempMinVal = val; var d = document.getElementById('tempMinDisplay'); if(d) d.textContent = val + '°'; }
-          else { tempMaxVal = val; var d = document.getElementById('tempMaxDisplay'); if(d) d.textContent = val + '°'; }
-          currentTemp = pid2 === 0 ? val : tempMinVal;
-          currentTempKey = getTempKey(currentTemp);
-          calcSpannedZones();
-          updateWeatherPreview();
-        }
-      });
-    })(pid, picker);
-  }
-  updateWeatherPreview();
-}
-
-function calcSpannedZones() {
-  currentSpannedZones = [];
-  for (var i = 0; i < TEMP_RANGES.length; i++) {
-    var r = TEMP_RANGES[i];
-    if (r.min <= tempMaxVal && r.max >= tempMinVal) currentSpannedZones.push(r.key);
-  }
 }
 
 document.addEventListener('DOMContentLoaded',function(){goPage('home');});
